@@ -21,12 +21,10 @@ const (
 
 // FTPClient represents a FTP client.
 type FTPClient struct {
-	host     string
-	port     int
-	conn     *textproto.Conn
-	logger   *log.Logger
-	dataHost string
-	dataPort int
+	host   string
+	port   int
+	conn   *textproto.Conn
+	logger *log.Logger
 }
 
 // NewFTPClient constructs a new FTP client.
@@ -38,7 +36,7 @@ func NewFTPClient(host string, port int) (*FTPClient, error) {
 	}, nil
 }
 
-// Close closes FTP connection.
+// Close closes FTP control connection.
 func (c *FTPClient) Close() {
 	if c.conn != nil {
 		if _, _, err := c.Cmd("QUIT"); err != nil {
@@ -56,7 +54,7 @@ func (c *FTPClient) SetLogger(logger *log.Logger) {
 	c.logger = logger
 }
 
-// Login logins to the SSH server.
+// Login logins to the FTP server.
 func (c *FTPClient) Login(user, password string) error {
 	if err := c.open(); err != nil {
 		return err

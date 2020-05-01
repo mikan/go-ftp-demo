@@ -10,6 +10,7 @@ import (
 )
 
 var dataCommands = []string{"RETR", "NLST", "LIST", "STOR", "APPE"}
+var commandMap = map[string]string{"cd": "CMD", "ls": "NLST", "dir": "LIST", "cat": "RETR", "rm": "DELE", "pwd": "PWD"}
 
 func main() {
 	host := flag.String("h", "localhost", "hostname")
@@ -45,7 +46,7 @@ func main() {
 		if text == "exit" || text == "quit" {
 			break
 		}
-		text = convertUnixLikeCommand(text)
+		text = convertUserFriendlyCommand(text)
 		if isDataCmd(text) {
 			msg, err := client.DataCmd(text)
 			if err != nil {
@@ -63,24 +64,11 @@ func main() {
 	}
 }
 
-func convertUnixLikeCommand(cmd string) string {
-	if strings.HasPrefix(cmd, "cd") {
-		return strings.Replace(cmd, "cd", "CWD", 1)
-	}
-	if strings.HasPrefix(cmd, "ls") {
-		return strings.Replace(cmd, "ls", "NLST", 1)
-	}
-	if strings.HasPrefix(cmd, "dir") {
-		return strings.Replace(cmd, "dir", "LIST", 1)
-	}
-	if strings.HasPrefix(cmd, "cat") {
-		return strings.Replace(cmd, "cat", "RETR", 1)
-	}
-	if strings.HasPrefix(cmd, "rm") {
-		return strings.Replace(cmd, "rm", "DELE", 1)
-	}
-	if strings.HasPrefix(cmd, "pwd") {
-		return strings.Replace(cmd, "pwd", "PWD", 1)
+func convertUserFriendlyCommand(cmd string) string {
+	for k, v := range commandMap {
+		if strings.HasPrefix(cmd, k) {
+			return strings.Replace(cmd, k, v, 1)
+		}
 	}
 	return cmd
 }
