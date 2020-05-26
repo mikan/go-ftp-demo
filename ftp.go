@@ -1,4 +1,4 @@
-package main
+package ftp
 
 import (
 	"fmt"
@@ -19,17 +19,17 @@ const (
 	StatusNeedPassword           = 331
 )
 
-// FTPClient represents a FTP client.
-type FTPClient struct {
+// Client represents an FTP client.
+type Client struct {
 	host   string
 	port   int
 	conn   *textproto.Conn
 	logger *log.Logger
 }
 
-// NewFTPClient constructs a new FTP client.
-func NewFTPClient(host string, port int) (*FTPClient, error) {
-	return &FTPClient{
+// NewClient constructs a new FTP client.
+func NewClient(host string, port int) (*Client, error) {
+	return &Client{
 		host:   host,
 		port:   port,
 		logger: log.New(ioutil.Discard, "", 0),
@@ -37,7 +37,7 @@ func NewFTPClient(host string, port int) (*FTPClient, error) {
 }
 
 // Close closes FTP control connection.
-func (c *FTPClient) Close() {
+func (c *Client) Close() {
 	if c.conn != nil {
 		if _, _, err := c.Cmd("QUIT"); err != nil {
 			c.logger.Printf("failed to send QUIT command: %v", err)
@@ -50,12 +50,12 @@ func (c *FTPClient) Close() {
 }
 
 // SetLogger updates logger. Default is discard.
-func (c *FTPClient) SetLogger(logger *log.Logger) {
+func (c *Client) SetLogger(logger *log.Logger) {
 	c.logger = logger
 }
 
 // Login logins to the FTP server.
-func (c *FTPClient) Login(user, password string) error {
+func (c *Client) Login(user, password string) error {
 	if err := c.open(); err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func (c *FTPClient) Login(user, password string) error {
 }
 
 // Cmd executes a FTP command.
-func (c *FTPClient) Cmd(text string) (code int, msg string, err error) {
+func (c *Client) Cmd(text string) (code int, msg string, err error) {
 	c.logger.Print("> " + text)
 	if _, err = c.conn.Cmd(text); err != nil {
 		return
@@ -93,7 +93,7 @@ func (c *FTPClient) Cmd(text string) (code int, msg string, err error) {
 }
 
 // DataCmd executes a FTP command using data connection.
-func (c *FTPClient) DataCmd(text string) (string, error) {
+func (c *Client) DataCmd(text string) (string, error) {
 	addr, err := c.passiveMode()
 	if err != nil {
 		return "", err
@@ -123,7 +123,7 @@ func (c *FTPClient) DataCmd(text string) (string, error) {
 	return string(resp), nil
 }
 
-func (c *FTPClient) open() error {
+func (c *Client) open() error {
 	if c.conn != nil {
 		if err := c.conn.Close(); err != nil {
 			return fmt.Errorf("failed to close previous connection: %w", err)
@@ -146,7 +146,7 @@ func (c *FTPClient) open() error {
 }
 
 // passiveMode enables data connection using passive mode.
-func (c *FTPClient) passiveMode() (string, error) {
+func (c *Client) passiveMode() (string, error) {
 	code, msg, err := c.Cmd("PASV")
 	if err != nil {
 		return "", fmt.Errorf("failed to send PASV command: %w", err)

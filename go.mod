@@ -1,3 +1,3 @@
-module github.com/mikan/go-ftp-demo
+module github.com/mikan/tiny-ftp-go
 
 go 1.14

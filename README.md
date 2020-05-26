@@ -1,17 +1,27 @@
-go-ftp-demo
+tiny-ftp-go
 ===========
 
-Simple Go implementation of FTP client for education use.
+Simple Go implementation of FTP client.
 
 ### Limitation
 
 - Local file operations are unavailable
 - Only supported passive mode
 
+### Download
+
+See [Releases](https://github.com/mikan/tiny-ftp-go/releases) page.
+
+### Import as library
+
+```
+go get github.com/mikan/tiny-ftp-go
+```
+
 ### Usage
 
 ```
-go-ftp-demo -h <HOST> -u <USER> -p <PASS>
+tiny-ftp -h <HOST> -u <USER> -p <PASS>
 ```
 
 All parameters and default values:

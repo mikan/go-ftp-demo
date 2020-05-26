@@ -7,6 +7,8 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	ftp "github.com/mikan/tiny-ftp-go"
 )
 
 var dataCommands = []string{"RETR", "NLST", "LIST", "STOR", "APPE"}
@@ -23,7 +25,7 @@ func main() {
 		flag.Usage()
 		os.Exit(2)
 	}
-	client, err := NewFTPClient(*host, *port)
+	client, err := ftp.NewClient(*host, *port)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
